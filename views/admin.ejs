@@ -1,0 +1,31 @@
+<% layout('layout') -%>
+<header class="top">
+  <h1>Admin Panel</h1>
+  <nav><a href="/dashboard">Back</a></nav>
+</header>
+<section class="card">
+  <h2>Users & Sections</h2>
+  <table>
+    <thead><tr><th>User</th><th>Sections</th><th>Update</th></tr></thead>
+    <tbody>
+      <% users.forEach(u => { %>
+        <tr>
+          <td><%= u.username %></td>
+          <td><%= JSON.parse(u.allowedSections).join(', ') %></td>
+          <td>
+            <form method="post" action="/admin/sections">
+              <input type="hidden" name="userId" value="<%= u.id %>"/>
+              <input name="sections" placeholder="comma separated" />
+              <button>Save</button>
+            </form>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+
+  <hr/>
+  <h2>Admin Passkey Enrollment</h2>
+  <button onclick="adminSetup()">Add fingerprint/face device</button>
+</section>
+<script src="/js/webauthn-client.js"></script>

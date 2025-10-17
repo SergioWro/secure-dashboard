@@ -1,0 +1,25 @@
+{
+  "name": "secure-dashboard",
+  "version": "1.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node server.js",
+    "start": "node server.js",
+    "init:admin": "node -e \"import('./auth.js').then(m=>m.bootstrapAdmin())\""
+  },
+  "dependencies": {
+    "@simplewebauthn/server": "8.4.1",
+    "bcryptjs": "2.4.3",
+    "better-sqlite3": "9.4.3",
+    "connect-redis": "7.1.1",
+    "csurf": "1.11.0",
+    "dotenv": "16.4.5",
+    "ejs": "3.1.10",
+    "express": "4.19.2",
+    "express-rate-limit": "7.4.0",
+    "express-session": "1.17.3",
+    "helmet": "7.1.0",
+    "ioredis": "5.4.1",
+    "nanoid": "5.0.7"
+  }
+}

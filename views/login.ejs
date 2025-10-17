@@ -1,0 +1,21 @@
+<% layout('layout') -%>
+<section class="card">
+  <h1>Sign In</h1>
+  <% if (error) { %><p class="error"><%= error %></p><% } %>
+  <form method="post" action="/login">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>"/>
+    <label>Username</label>
+    <input name="username" required />
+    <label>Password</label>
+    <input name="password" type="password" required />
+    <button>Login</button>
+  </form>
+
+  <hr/>
+  <h2>Admin Passkey</h2>
+  <button id="admin-login">Sign in with fingerprint</button>
+</section>
+<script src="/js/webauthn-client.js"></script>
+<script>
+  document.getElementById('admin-login').addEventListener('click', adminLogin);
+</script>
