@@ -33,4 +33,7 @@ export function setUserSections(userId, sections) {
   updateAllowed.run(JSON.stringify(sections || []), userId);
 }
 
-export function listRegularUsers() { return listUsers.all(); }
+// ✅ pass the role to the parameterized query
+export function listRegularUsers() {
+  return listUsers.all('user');
+}
