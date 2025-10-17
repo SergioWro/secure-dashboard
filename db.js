@@ -27,7 +27,11 @@ export const insertUser = db.prepare(
 export const getUserByUsername = db.prepare('SELECT * FROM users WHERE username = ?');
 export const getUserById = db.prepare('SELECT * FROM users WHERE id = ?');
 export const updateUserPassword = db.prepare('UPDATE users SET passwordHash = ? WHERE id = ?');
-export const listUsers = db.prepare("SELECT id, username, role, allowedSections FROM users WHERE role = 'user');
+
+export const listUsers = db.prepare(
+  "SELECT id, username, role, allowedSections FROM users WHERE role = 'user'"
+);
+
 export const updateAllowed = db.prepare('UPDATE users SET allowedSections = ? WHERE id = ?');
 
 export const insertCredential = db.prepare('INSERT INTO credentials (userId, credId, publicKey, counter, transports) VALUES (?,?,?,?,?)');
