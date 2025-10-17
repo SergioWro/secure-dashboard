@@ -30,7 +30,7 @@ export const getUserById = db.prepare('SELECT * FROM users WHERE id = ?');
 export const updateUserPassword = db.prepare('UPDATE users SET passwordHash = ? WHERE id = ?');
 
 export const listUsers = db.prepare(
-  "SELECT id, username, role, allowedSections FROM users WHERE role = 'user'"
+  'SELECT id, username, role, allowedSections FROM users WHERE role = ?'
 );
 
 export const updateAllowed = db.prepare('UPDATE users SET allowedSections = ? WHERE id = ?');
