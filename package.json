@@ -8,7 +8,7 @@
     "init:admin": "node -e \"import('./auth.js').then(m=>m.bootstrapAdmin())\""
   },
   "dependencies": {
-    "@simplewebauthn/server": "8.4.1",
+    "@simplewebauthn/server": "^9.0.0",
     "bcryptjs": "2.4.3",
     "better-sqlite3": "9.4.3",
     "connect-redis": "7.1.1",
