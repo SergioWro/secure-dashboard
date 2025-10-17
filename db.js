@@ -1,5 +1,6 @@
 import Database from 'better-sqlite3';
 const db = new Database('app.db');
+console.log('db.js v2 loaded');
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS users (
