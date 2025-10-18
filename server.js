@@ -4,14 +4,15 @@ import path from 'path';
 import session from 'express-session';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import RedisStore from 'connect-redis';          // v7: class
-import { createClient } from 'redis';            // official Redis client
+import RedisStore from 'connect-redis';      // v7: default export class
+import { createClient } from 'redis';        // official Redis client
+
 import authRoutes from './routes/authRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 
 import { fileURLToPath } from 'url';
-import { bootstrapAdmin } from './routes/authRoutes.js';
+import { bootstrapAdmin } from './auth.js';  // <-- keep auth.js in project root
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -32,13 +33,7 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Routes
-app.get('/', (req, res) => res.redirect('/login'));
-app.use(authRoutes);
-app.use(dashboardRoutes);
-app.use(adminRoutes);
-
-// --- start server in an async wrapper (no top-level await) ---
+// --- start server in an async wrapper (so we can await Redis connect) ---
 async function start() {
   let store;
 
@@ -57,19 +52,28 @@ async function start() {
     console.warn('REDIS_URL not set — using in-memory session store.');
   }
 
-  app.use(session({
-    store,
-    secret: process.env.SESSION_SECRET || 'change-me',
-    resave: false,
-    saveUninitialized: false,
-    rolling: true,
-    cookie: {
-      httpOnly: true,
-      sameSite: 'lax',
-      secure: String(process.env.COOKIE_SECURE).toLowerCase() === 'true',
-      maxAge: 1000 * 60 * 60 * 8, // 8 hours
-    },
-  }));
+  // Sessions MUST be registered before routes
+  app.use(
+    session({
+      store,
+      secret: process.env.SESSION_SECRET || 'change-me',
+      resave: false,
+      saveUninitialized: false,
+      rolling: true,
+      cookie: {
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: String(process.env.COOKIE_SECURE).toLowerCase() === 'true',
+        maxAge: 1000 * 60 * 60 * 8, // 8 hours
+      },
+    })
+  );
+
+  // Routes (after session)
+  app.get('/', (req, res) => res.redirect('/login'));
+  app.use(authRoutes);
+  app.use(dashboardRoutes);
+  app.use(adminRoutes);
 
   const port = process.env.PORT || 3000;
   app.listen(port, async () => {
