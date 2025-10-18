@@ -10,7 +10,7 @@ import authRoutes from './routes/auth.js';       // <-- match your repo filename
 import dashboardRoutes from './routes/dashboard.js';
 import adminRoutes from './routes/admin.js';
 import { fileURLToPath } from 'url';
-import { bootstrapAdmin } from './auth.js';
+import { bootstrapAdmin } from './routes/authRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
