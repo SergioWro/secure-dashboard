@@ -1,4 +1,5 @@
 import Database from 'better-sqlite3';
+
 const db = new Database('app.db');
 console.log('db.js v2 loaded');
 
@@ -25,8 +26,9 @@ db.exec(`
 export const insertUser = db.prepare(
   'INSERT INTO users (username, passwordHash, role, allowedSections) VALUES (@username, @passwordHash, @role, @allowedSections)'
 );
+
 export const getUserByUsername = db.prepare('SELECT * FROM users WHERE username = ?');
-export const getUserById = db.prepare('SELECT * FROM users WHERE id = ?');
+export const getUserById       = db.prepare('SELECT * FROM users WHERE id = ?');
 export const updateUserPassword = db.prepare('UPDATE users SET passwordHash = ? WHERE id = ?');
 
 export const listUsers = db.prepare(
@@ -35,9 +37,11 @@ export const listUsers = db.prepare(
 
 export const updateAllowed = db.prepare('UPDATE users SET allowedSections = ? WHERE id = ?');
 
-export const insertCredential = db.prepare('INSERT INTO credentials (userId, credId, publicKey, counter, transports) VALUES (?,?,?,?,?)');
+export const insertCredential = db.prepare(
+  'INSERT INTO credentials (userId, credId, publicKey, counter, transports) VALUES (?,?,?,?,?)'
+);
 export const getCredsForUser = db.prepare('SELECT * FROM credentials WHERE userId = ?');
-export const getCredById = db.prepare('SELECT * FROM credentials WHERE credId = ?');
-export const updateCounter = db.prepare('UPDATE credentials SET counter = ? WHERE id = ?');
+export const getCredById     = db.prepare('SELECT * FROM credentials WHERE credId = ?');
+export const updateCounter   = db.prepare('UPDATE credentials SET counter = ? WHERE id = ?');
 
 export default db;
