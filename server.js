@@ -6,9 +6,10 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import RedisStore from 'connect-redis';          // v7: class
 import { createClient } from 'redis';            // official Redis client
-import authRoutes from './routes/auth.js';       // <-- match your repo filenames
-import dashboardRoutes from './routes/dashboard.js';
-import adminRoutes from './routes/admin.js';
+import authRoutes from './routes/authRoutes.js';
+import dashboardRoutes from './routes/dashboardRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
+
 import { fileURLToPath } from 'url';
 import { bootstrapAdmin } from './routes/authRoutes.js';
 
