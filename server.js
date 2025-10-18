@@ -4,15 +4,16 @@ import path from 'path';
 import session from 'express-session';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
-import RedisStore from 'connect-redis';      // v7: default export class
-import { createClient } from 'redis';        // official Redis client
+import RedisStore from 'connect-redis';
+import { createClient } from 'redis';
+import expressEjsLayouts from 'express-ejs-layouts';
 
 import authRoutes from './routes/authRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 
 import { fileURLToPath } from 'url';
-import { bootstrapAdmin } from './auth.js';  // <-- keep auth.js in project root
+import { bootstrapAdmin } from './auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -31,6 +32,8 @@ app.set('trust proxy', 1);
 // Views & static
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
+app.use(expressEjsLayouts);
+app.set('layout', 'layout'); // uses views/layout.ejs
 app.use(express.static(path.join(__dirname, 'public')));
 
 // --- start server in an async wrapper (so we can await Redis connect) ---
@@ -42,10 +45,7 @@ async function start() {
     redis.on('error', (err) => console.error('Redis error:', err));
     await redis.connect();
 
-    store = new RedisStore({
-      client: redis,
-      prefix: 'sess:',
-    });
+    store = new RedisStore({ client: redis, prefix: 'sess:' });
     console.log('Using Redis session store');
   } else {
     store = new session.MemoryStore();
@@ -53,21 +53,19 @@ async function start() {
   }
 
   // Sessions MUST be registered before routes
-  app.use(
-    session({
-      store,
-      secret: process.env.SESSION_SECRET || 'change-me',
-      resave: false,
-      saveUninitialized: false,
-      rolling: true,
-      cookie: {
-        httpOnly: true,
-        sameSite: 'lax',
-        secure: String(process.env.COOKIE_SECURE).toLowerCase() === 'true',
-        maxAge: 1000 * 60 * 60 * 8, // 8 hours
-      },
-    })
-  );
+  app.use(session({
+    store,
+    secret: process.env.SESSION_SECRET || 'change-me',
+    resave: false,
+    saveUninitialized: false,
+    rolling: true,
+    cookie: {
+      httpOnly: true,
+      sameSite: 'lax',
+      secure: String(process.env.COOKIE_SECURE).toLowerCase() === 'true',
+      maxAge: 1000 * 60 * 60 * 8, // 8 hours
+    },
+  }));
 
   // Routes (after session)
   app.get('/', (req, res) => res.redirect('/login'));
