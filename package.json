@@ -1,8 +1,10 @@
 {
   "name": "secure-dashboard",
   "version": "1.1.0",
-  "engines": { "node": "20.x" },
   "type": "module",
+  "engines": {
+    "node": "20.x"
+  },
   "scripts": {
     "dev": "node server.js",
     "start": "node server.js",
@@ -20,7 +22,7 @@
     "express-rate-limit": "7.4.0",
     "express-session": "1.17.3",
     "helmet": "7.1.0",
-    "ioredis": "5.4.1",
+    "redis": "^4.6.13",
     "nanoid": "5.0.7"
   }
 }
