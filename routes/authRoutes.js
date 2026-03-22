@@ -20,8 +20,8 @@ router.post('/login', csrfProtection, async (req, res) => {
   res.redirect('/dashboard');
 });
 
-router.get('/admin/setup/options', (req, res) => {
-  const opts = startRegistration(req.session);
+router.get('/admin/setup/options', async (req, res) => {
+  const opts = await startRegistration(req.session);
   res.json(opts);
 });
 router.post('/admin/setup/verify', async (req, res) => {
@@ -29,8 +29,8 @@ router.post('/admin/setup/verify', async (req, res) => {
   res.json(out);
 });
 
-router.get('/admin/login/options', (req, res) => {
-  const opts = startAuthentication(req.session);
+router.get('/admin/login/options', async (req, res) => {
+  const opts = await startAuthentication(req.session);
   res.json(opts);
 });
 router.post('/admin/login/verify', async (req, res) => {

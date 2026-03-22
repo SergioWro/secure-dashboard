@@ -9,10 +9,10 @@ import { getUserByUsername, getCredsForUser, insertCredential, getCredById, upda
 const expectedRPID = process.env.RP_ID;
 const expectedOrigin = process.env.RP_ORIGIN;
 
-export function startRegistration(session) {
+export async function startRegistration(session) {
   const admin = getUserByUsername.get('admin');
   const existingCreds = getCredsForUser.all(admin.id);
-  const options = generateRegistrationOptions({
+  const options = await generateRegistrationOptions({
     rpName: 'Secure Dashboard',
     rpID: expectedRPID,
     userID: String(admin.id),
@@ -44,11 +44,11 @@ export async function finishRegistration(session, response) {
   return { verified };
 }
 
-export function startAuthentication(session) {
+export async function startAuthentication(session) {
   const admin = getUserByUsername.get('admin');
   const creds = getCredsForUser.all(admin.id);
   const allowCredentials = creds.map(c => ({ id: Buffer.from(c.credId, 'base64url'), type: 'public-key' }));
-  const options = generateAuthenticationOptions({
+  const options = await generateAuthenticationOptions({
     rpID: expectedRPID,
     userVerification: 'required',
     allowCredentials
