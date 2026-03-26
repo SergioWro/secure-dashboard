@@ -4,6 +4,15 @@ const db = new Database('app.db');
 console.log('db.js v2 loaded');
 
 db.exec(`
+  CREATE TABLE IF NOT EXISTS missile_launches (
+    id        INTEGER PRIMARY KEY AUTOINCREMENT,
+    date      TEXT    NOT NULL UNIQUE,   -- YYYY-MM-DD (UTC)
+    count     INTEGER NOT NULL DEFAULT 0,
+    notes     TEXT    DEFAULT '',
+    source    TEXT    DEFAULT '',
+    createdAt TEXT    DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TEXT    DEFAULT CURRENT_TIMESTAMP
+  );
   CREATE TABLE IF NOT EXISTS users (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     username TEXT UNIQUE NOT NULL,
@@ -43,5 +52,37 @@ export const insertCredential = db.prepare(
 export const getCredsForUser = db.prepare('SELECT * FROM credentials WHERE userId = ?');
 export const getCredById     = db.prepare('SELECT * FROM credentials WHERE credId = ?');
 export const updateCounter   = db.prepare('UPDATE credentials SET counter = ? WHERE id = ?');
+
+// ── Missile launch tracking ───────────────────────────────────────────────────
+export const upsertLaunch = db.prepare(`
+  INSERT INTO missile_launches (date, count, notes, source)
+    VALUES (@date, @count, @notes, @source)
+  ON CONFLICT(date) DO UPDATE SET
+    count     = excluded.count,
+    notes     = excluded.notes,
+    source    = excluded.source,
+    updatedAt = CURRENT_TIMESTAMP
+`);
+
+export const getLaunchesSince = db.prepare(`
+  SELECT date, count, notes, source
+  FROM missile_launches
+  WHERE date >= ?
+  ORDER BY date ASC
+`);
+
+export const getLaunchByDate = db.prepare(
+  'SELECT * FROM missile_launches WHERE date = ?'
+);
+
+export const deleteLaunch = db.prepare(
+  'DELETE FROM missile_launches WHERE id = ?'
+);
+
+export const totalLaunchesSince = db.prepare(`
+  SELECT SUM(count) as total, COUNT(*) as days
+  FROM missile_launches
+  WHERE date >= ?
+`);
 
 export default db;

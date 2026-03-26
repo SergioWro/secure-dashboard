@@ -1,0 +1,122 @@
+<header class="top">
+  <h1>Iran → Israel Missile Launches</h1>
+  <a href="/dashboard" style="color:var(--accent)">← Dashboard</a>
+</header>
+
+<p style="color:#aab">Tracking daily missile launches from Iran targeting Israel since <strong><%= trackingStart %></strong>.</p>
+
+<%# ── Summary cards ──────────────────────────────────────────────────────────── %>
+<div style="display:flex;gap:16px;margin:20px 0;flex-wrap:wrap">
+  <div class="card" style="flex:1;min-width:140px;text-align:center">
+    <div style="font-size:2.2rem;font-weight:700;color:#ff6b6b"><%= total %></div>
+    <div style="color:#aab;margin-top:4px">Total Missiles</div>
+  </div>
+  <div class="card" style="flex:1;min-width:140px;text-align:center">
+    <div style="font-size:2.2rem;font-weight:700;color:#ffa94d"><%= days %></div>
+    <div style="color:#aab;margin-top:4px">Incident Days</div>
+  </div>
+  <div class="card" style="flex:1;min-width:140px;text-align:center">
+    <div style="font-size:2.2rem;font-weight:700;color:#69db7c">
+      <%= days > 0 ? (total / days).toFixed(1) : '0' %>
+    </div>
+    <div style="color:#aab;margin-top:4px">Avg per Incident Day</div>
+  </div>
+</div>
+
+<%# ── Bar chart ───────────────────────────────────────────────────────────────── %>
+<% const maxCount = Math.max(...launches.map(l => l.count), 1); %>
+<div class="card" style="margin-bottom:24px;overflow-x:auto">
+  <h3 style="margin-top:0">Daily Launch Count</h3>
+  <div style="display:flex;align-items:flex-end;gap:3px;height:160px;padding-top:8px">
+    <% launches.forEach(l => { %>
+      <% const pct = (l.count / maxCount * 100).toFixed(1); %>
+      <div title="<%= l.date %>: <%= l.count %> missile<%= l.count !== 1 ? 's' : '' %><%= l.notes ? ' – ' + l.notes : '' %>"
+           style="flex:1;min-width:4px;background:<%= l.count > 0 ? '#ff6b6b' : '#1e2a45' %>;height:<%= pct %>%;border-radius:3px 3px 0 0;cursor:default">
+      </div>
+    <% }) %>
+  </div>
+  <div style="display:flex;justify-content:space-between;color:#556;font-size:0.72rem;margin-top:4px">
+    <span><%= launches[0]?.date ?? '' %></span>
+    <span><%= launches[launches.length - 1]?.date ?? '' %></span>
+  </div>
+</div>
+
+<%# ── Data table ─────────────────────────────────────────────────────────────── %>
+<div class="card" style="margin-bottom:32px">
+  <h3 style="margin-top:0">Daily Records</h3>
+  <div style="overflow-x:auto">
+    <table>
+      <thead>
+        <tr>
+          <th style="text-align:left">Date</th>
+          <th style="text-align:right">Missiles</th>
+          <th style="text-align:left">Notes</th>
+          <th style="text-align:left">Source</th>
+          <% if (role === 'admin') { %><th></th><% } %>
+        </tr>
+      </thead>
+      <tbody>
+        <% launches.filter(l => l.count > 0).reverse().forEach(l => { %>
+          <tr>
+            <td><%= l.date %></td>
+            <td style="text-align:right;font-weight:700;color:#ff6b6b"><%= l.count %></td>
+            <td style="color:#aab"><%= l.notes || '—' %></td>
+            <td>
+              <% if (l.source) { %>
+                <% if (l.source.startsWith('http')) { %>
+                  <a href="<%= l.source %>" target="_blank" rel="noopener" style="color:var(--accent)">link</a>
+                <% } else { %>
+                  <%= l.source %>
+                <% } %>
+              <% } else { %>—<% } %>
+            </td>
+            <% if (role === 'admin') { %>
+              <td>
+                <form method="post" action="/missiles/delete" style="display:inline">
+                  <input type="hidden" name="date" value="<%= l.date %>">
+                  <button style="background:#5c2a2a;color:#ff9090;padding:4px 10px;font-size:0.8rem"
+                          onclick="return confirm('Delete record for <%= l.date %>?')">Delete</button>
+                </form>
+              </td>
+            <% } %>
+          </tr>
+        <% }) %>
+        <% if (!launches.some(l => l.count > 0)) { %>
+          <tr><td colspan="5" style="color:#556;text-align:center;padding:20px">No data entered yet.</td></tr>
+        <% } %>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<%# ── Admin: add / update record form ────────────────────────────────────────── %>
+<% if (role === 'admin') { %>
+  <div class="card">
+    <h3 style="margin-top:0">Add / Update Record</h3>
+    <p style="color:#aab;font-size:0.85rem">Enter verified data from authoritative news sources or official reports.</p>
+    <form method="post" action="/missiles">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label for="date">Date (YYYY-MM-DD) *</label>
+          <input type="date" id="date" name="date"
+                 min="<%= trackingStart %>"
+                 max="<%= new Date().toISOString().slice(0,10) %>"
+                 required style="width:100%">
+        </div>
+        <div>
+          <label for="count">Missiles Launched *</label>
+          <input type="number" id="count" name="count" min="0" required style="width:100%">
+        </div>
+        <div>
+          <label for="notes">Notes</label>
+          <input type="text" id="notes" name="notes" placeholder="e.g. Ballistic missiles targeting Tel Aviv" style="width:100%">
+        </div>
+        <div>
+          <label for="source">Source URL or Reference</label>
+          <input type="text" id="source" name="source" placeholder="https://… or news outlet name" style="width:100%">
+        </div>
+      </div>
+      <button type="submit" style="margin-top:16px">Save Record</button>
+    </form>
+  </div>
+<% } %>

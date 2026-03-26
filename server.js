@@ -10,6 +10,7 @@ import { createClient } from 'redis';
 import authRoutes from './routes/authRoutes.js';
 import dashboardRoutes from './routes/dashboardRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import missileRoutes from './routes/missileRoutes.js';
 
 import { fileURLToPath } from 'url';
 import { bootstrapAdmin } from './auth.js'; // <-- corrected
@@ -64,6 +65,7 @@ async function start() {
   app.use(authRoutes);
   app.use(dashboardRoutes);
   app.use(adminRoutes);
+  app.use(missileRoutes);
 
   const port = process.env.PORT || 3000;
   app.listen(port, async () => {
