@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Flip Scanner</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header>
+  <h1>Flip Scanner</h1>
+  <div id="banner" hidden></div>
+</header>
+<main>
+  <section class="summary">
+    <div><small>Total value</small><strong id="total">$0</strong></div>
+    <div><small>Items</small><strong id="count">0</strong></div>
+    <label class="btn primary">Scan photo
+      <input id="photo" type="file" accept="image/*" capture="environment" hidden>
+    </label>
+  </section>
+  <section class="filters">
+    <input id="q" type="search" placeholder="Search">
+    <label>Min profit $<input id="minProfit" type="number" min="0" step="1" value="0"></label>
+    <button id="export" class="btn">CSV</button>
+    <button id="clear" class="btn">Clear</button>
+  </section>
+  <p id="msg" role="status"></p>
+  <ul id="list"></ul>
+</main>
+<script src="app.js"></script>
+</body>
+</html>
