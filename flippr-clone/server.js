@@ -6,6 +6,7 @@ import { identifyItems, isDemoVision } from './lib/identify.js';
 import { lookupPrice, isDemoPricing } from './lib/pricing.js';
 import { profitOf, flipScore } from './lib/score.js';
 
+const MAX_ITEMS = 20; // bulk scan cap
 const ALLOWED = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const upload = multer({
   storage: multer.memoryStorage(),
@@ -22,7 +23,7 @@ app.post('/api/scan', upload.single('photo'), async (req, res) => {
   if (!req.file) return res.status(400).json({ error: 'Send a JPEG, PNG or WebP under 8MB as "photo".' });
   try {
     const found = await identifyItems(req.file.buffer, req.file.mimetype);
-    const items = await Promise.all(found.slice(0, 40).map(async item => {
+    const items = await Promise.all(found.slice(0, MAX_ITEMS).map(async item => {
       try {
         const p = await lookupPrice(item);
         const profit = profitOf(p.median);

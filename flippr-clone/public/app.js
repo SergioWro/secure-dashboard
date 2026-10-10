@@ -9,7 +9,7 @@ function save() {
   try { localStorage.setItem(KEY, JSON.stringify(inventory)); } catch {}
 }
 const money = n => (n == null ? 'n/a' : '$' + n.toFixed(2));
-const tier = s => (s == null ? 'bad' : s >= 60 ? 'good' : s >= 35 ? 'mid' : 'bad');
+const tier = s => (s == null ? 'bad' : s >= 6 ? 'good' : s >= 4 ? 'mid' : 'bad');
 
 function render() {
   const q = $('q').value.trim().toLowerCase();

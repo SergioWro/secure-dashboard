@@ -9,9 +9,10 @@ Mobile-first web app, similar in idea to Flippr: photo of a shelf, items identif
 Works in demo mode with no keys (fake items, fake prices).
 
 ## How it works
+- Bulk scan: up to 20 items per photo.
 - `lib/identify.js`: sends the photo to Claude vision, gets a JSON list of titles.
 - `lib/pricing.js`: eBay Browse API, median of ACTIVE listings (USD).
-- `lib/score.js`: profit = price - ~13.25% fee - $3.99 shipping. Score 0-100 from profit and demand.
+- `lib/score.js`: profit = price - ~13.25% fee - $3.99 shipping. Score 1-10 from profit and demand.
 - Inventory lives in the browser (localStorage). CSV export included.
 
 ## Limits (honest)
